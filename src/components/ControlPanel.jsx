@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import PropTypes from 'prop-types';
 
 function ControlPanel({timeSpent, timeRemaining, timeOriginalEstimate, timeBudget, handleButtonClick}) {
     return (
@@ -30,6 +31,14 @@ function ControlPanel({timeSpent, timeRemaining, timeOriginalEstimate, timeBudge
         </ControlPanelContainer>
     );
 }
+
+ControlPanel.propTypes = {
+    timeSpent: PropTypes.number.isRequired,
+    timeRemaining: PropTypes.number.isRequired,
+    timeOriginalEstimate: PropTypes.number.isRequired,
+    timeBudget: PropTypes.number.isRequired,
+    handleButtonClick: PropTypes.func.isRequired,
+};
 
 export default ControlPanel;
 
