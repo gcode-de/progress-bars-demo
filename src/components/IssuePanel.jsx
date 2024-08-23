@@ -1,42 +1,62 @@
-import {useEffect, useState} from 'react';
+import {useEffect, useState, useCallback} from 'react';
 import styled from 'styled-components';
 import ProgressBar from './ProgressBar';
 import TimeDisplay from './TimeDisplay';
 
 function IssuePanel({timeSpent, timeRemaining, timeOriginalEstimate, timeBudget, title}) {
-    const [progressWidth, setProgressWidth] = useState('0%');
     const [budgetPosition, setBudgetPosition] = useState('0%');
-    const [timeDisplay, setTimeDisplay] = useState('');
 
-    useEffect(() => {
-        updateProgressbar();
-    }, [timeSpent, timeOriginalEstimate, timeRemaining, timeBudget]);
+    const [hoursPassed, setHoursPassed] = useState('');
+    const [hoursTotal, setHoursTotal] = useState('');
 
-    const formatTime = (hours) => {
-        const days = Math.floor(hours / 8);
-        const remainingHours = hours % 8;
-        const minutes = Math.round((remainingHours % 1) * 60);
-        return `${days > 0 ? days + 'd ' : ''}${Math.floor(remainingHours)}:${minutes.toString().padStart(2, '0')}h`;
-    };
+    const [greenPercent, setGreenPercent] = useState(0);
+    const [greyPercent, setGreyPercent] = useState(0);
+    const [redPercent, setRedPercent] = useState(0);
+    const [whitePercent, setWhitePercent] = useState(100);
+    const [blankPercent, setBlankPercent] = useState(0);
 
-    const updateProgressbar = () => {
+    const updateProgressbar = useCallback(() => {
         const total = Math.max(timeOriginalEstimate, timeBudget, timeSpent + timeRemaining);
         const spentProgress = total ? (timeSpent / total) * 100 : 0;
-        const budgetIndicator = total ? (timeBudget / total) * 100 : 0;
+        const remainingProgress = total ? (timeRemaining / total) * 100 : 0;
 
-        setProgressWidth(`${Math.min(spentProgress, 100)}%`);
+        const overrun = Math.max(0, timeSpent + timeRemaining - timeOriginalEstimate);
+        const redProgress = total ? (overrun / total) * 100 : 0;
+
+        const remainingGreyProgress = remainingProgress - redProgress;
+        const whiteProgress = 100 - spentProgress - remainingProgress;
+
+        setGreenPercent(spentProgress);
+        setGreyPercent(Math.max(0, remainingGreyProgress));
+        setRedPercent(redProgress);
+        setWhitePercent(Math.max(0, whiteProgress));
+        setBlankPercent(0);
+
+        const budgetIndicator = total ? (timeBudget / total) * 100 : 0;
         setBudgetPosition(`${Math.min(budgetIndicator, 100)}%`);
 
         const maxTime = Math.max(timeOriginalEstimate, timeSpent + timeRemaining);
-        setTimeDisplay(`${formatTime(timeSpent)} / ${formatTime(maxTime)}`);
-    };
+        setHoursPassed(timeSpent);
+        setHoursTotal(maxTime);
+    }, [timeSpent, timeRemaining, timeOriginalEstimate, timeBudget]);
+
+    useEffect(() => {
+        updateProgressbar();
+    }, [timeSpent, timeOriginalEstimate, timeRemaining, timeBudget, updateProgressbar]);
 
     return (
         <IssuePanelContainer>
             <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
                 {title && <span>{title}</span>}
-                <ProgressBar progressWidth={progressWidth} budgetPosition={budgetPosition}/>
-                <TimeDisplay timeDisplay={timeDisplay}/>
+                <ProgressBar
+                    budgetPosition={budgetPosition}
+                    greenPercent={greenPercent}
+                    greyPercent={greyPercent}
+                    redPercent={redPercent}
+                    whitePercent={whitePercent}
+                    blankPercent={blankPercent}
+                />
+                <TimeDisplay hoursPassed={hoursPassed} hoursTotal={hoursTotal}/>
             </div>
         </IssuePanelContainer>
     );

@@ -1,10 +1,29 @@
 import styled from 'styled-components';
 
-function ProgressBar({progressWidth, budgetPosition}) {
+function ProgressBar({
+                         budgetPosition,
+                         greenPercent = 0,
+                         greyPercent = 0,
+                         redPercent = 0,
+                         whitePercent = 100,
+                         blankPercent = 0
+                     }) {
+    const sections = [
+        {color: 'green', width: `${greenPercent}%`},
+        {color: 'grey', width: `${greyPercent}%`},
+        {color: 'red', width: `${redPercent}%`},
+        {color: 'white', width: `${whitePercent}%`},
+        {color: 'blank', width: `${blankPercent}%`},
+    ];
+
     return (
         <ProgressBarContainer>
-            <Progress width={progressWidth}/>
-            {budgetPosition !== "0%" && <BudgetIndicator position={budgetPosition}/>}
+            {sections
+                .filter(section => parseFloat(section.width) > 0)
+                .map((section, index) => (
+                    <ProgressSection key={index} width={section.width} color={section.color}/>
+                ))}
+            <BudgetIndicator position={budgetPosition}/>
         </ProgressBarContainer>
     );
 }
@@ -17,20 +36,57 @@ const ProgressBarContainer = styled.div`
     position: relative;
     flex-grow: 1;
     margin: 0 10px;
+    display: flex;
+    box-sizing: border-box;
 `;
 
-const Progress = styled.div`
+const ProgressSection = styled.div`
     height: 100%;
-    background-color: #4caf50;
     width: ${props => props.width || '0%'};
+    background-color: ${props => {
+        switch (props.color) {
+            case 'green':
+                return '#66BB6A';
+            case 'grey':
+                return '#BDBDBD';
+            case 'red':
+                return '#EF5350';
+            case 'white':
+                return '#F5F5F5';
+            case 'blank':
+                return 'transparent';
+            default:
+                return '#F5F5F5';
+        }
+    }};
+    border: ${props => {
+        switch (props.color) {
+            case 'green':
+                return '1px solid #4CAF50';
+            case 'grey':
+                return '1px dashed #9E9E9E';
+            case 'red':
+                return '1px dashed #E53935';
+            case 'white':
+                return '1px solid #E0E0E0';
+            case 'blank':
+                return 'none';
+            default:
+                return '1px solid #E0E0E0';
+        }
+    }};
     transition: width 0.5s ease-in-out;
+    box-sizing: border-box;
 `;
 
 const BudgetIndicator = styled.div`
-    height: calc(100% + 5px);
+    height: calc(100% + 6px);
     width: 2px;
     background-color: black;
     position: absolute;
-    left: ${props => props.position || '0%'};
-    top: -5px;
+    left: calc(${props => props.position || '0%'} - 1px);
+    top: -3px;
+    opacity: ${props => (props.position === '0%' ? 0 : 1)};
+    transition: left 0.5s ease-in-out, opacity 0.5s ease-in-out;
+    box-sizing: border-box;
 `;
