@@ -1,5 +1,7 @@
 import {useEffect, useState} from 'react';
 import styled from 'styled-components';
+import ProgressBar from './ProgressBar';
+import TimeDisplay from './TimeDisplay';
 
 function IssuePanel({timeSpent, timeRemaining, timeOriginalEstimate, timeBudget, title}) {
     const [progressWidth, setProgressWidth] = useState('0%');
@@ -31,16 +33,11 @@ function IssuePanel({timeSpent, timeRemaining, timeOriginalEstimate, timeBudget,
 
     return (
         <IssuePanelContainer>
-            <FieldsContainer>
-                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-                    {title && <span>{title}</span>}
-                    <ProgressBar>
-                        <Progress width={progressWidth}/>
-                        {budgetPosition !== "0%" && <BudgetIndicator position={budgetPosition}/>}
-                    </ProgressBar>
-                    <span>{timeDisplay}</span>
-                </div>
-            </FieldsContainer>
+            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                {title && <span>{title}</span>}
+                <ProgressBar progressWidth={progressWidth} budgetPosition={budgetPosition}/>
+                <TimeDisplay timeDisplay={timeDisplay}/>
+            </div>
         </IssuePanelContainer>
     );
 }
@@ -51,33 +48,6 @@ const IssuePanelContainer = styled.div`
     box-shadow: 0 0 6px #A2A2A2;
     background-color: #EFEFEF;
     padding: 20px;
+    padding-top: 25px;
     margin-bottom: 20px;
-`;
-
-const FieldsContainer = styled.div`
-    margin-top: 5px;
-`;
-
-const ProgressBar = styled.div`
-    height: 10px;
-    background-color: #ccc;
-    position: relative;
-    flex-grow: 1;
-    margin: 0 10px;
-`;
-
-const Progress = styled.div`
-    height: 100%;
-    background-color: #4caf50;
-    width: ${props => props.width || '0%'};
-    transition: width 0.5s ease-in-out;
-`;
-
-const BudgetIndicator = styled.div`
-    height: calc(100% + 5px);
-    width: 2px;
-    background-color: black;
-    position: absolute;
-    left: ${props => props.position || '0%'};
-    top: -5px;
 `;
