@@ -16,7 +16,6 @@ function ProgressBar({
         {color: 'white', width: `${whitePercent}%`},
         {color: 'blank', width: `${blankPercent}%`},
     ];
-
     return (
         <ProgressBarContainer>
             {sections
@@ -94,9 +93,9 @@ const BudgetIndicator = styled.div`
     width: 2px;
     background-color: black;
     position: absolute;
-    left: calc(${props => props.position || '0%'} - 1px);
+    left: calc(${props => `${props.position || 0}%`} - 1px);
     top: -3px;
-    opacity: ${props => (props.position === '0%' ? 0 : 1)};
+    opacity: ${props => (props.position === 0 ? 0 : 1)};
     transition: left 0.5s ease-in-out, opacity 0.5s ease-in-out;
     box-sizing: border-box;
 `;
