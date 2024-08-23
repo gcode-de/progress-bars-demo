@@ -1,5 +1,6 @@
-function TimeDisplay({hoursPassed, hoursTotal}) {
+import PropTypes from 'prop-types';
 
+function TimeDisplay({hoursPassed, hoursTotal}) {
     const formatTime = (hours) => {
         const days = Math.floor(hours / 8);
         const remainingHours = hours % 8;
@@ -9,5 +10,10 @@ function TimeDisplay({hoursPassed, hoursTotal}) {
 
     return <span>{formatTime(hoursPassed)} / {formatTime(hoursTotal)}</span>;
 }
+
+TimeDisplay.propTypes = {
+    hoursPassed: PropTypes.number.isRequired,
+    hoursTotal: PropTypes.number.isRequired,
+};
 
 export default TimeDisplay;

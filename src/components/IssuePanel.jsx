@@ -1,13 +1,14 @@
 import {useEffect, useState, useCallback} from 'react';
+import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import ProgressBar from './ProgressBar';
 import TimeDisplay from './TimeDisplay';
 
 function IssuePanel({timeSpent, timeRemaining, timeOriginalEstimate, timeBudget, title}) {
-    const [budgetPosition, setBudgetPosition] = useState('0%');
+    const [budgetPosition, setBudgetPosition] = useState(0);
 
-    const [hoursPassed, setHoursPassed] = useState('');
-    const [hoursTotal, setHoursTotal] = useState('');
+    const [hoursPassed, setHoursPassed] = useState(0);
+    const [hoursTotal, setHoursTotal] = useState(0);
 
     const [greenPercent, setGreenPercent] = useState(0);
     const [greyPercent, setGreyPercent] = useState(0);
@@ -26,14 +27,14 @@ function IssuePanel({timeSpent, timeRemaining, timeOriginalEstimate, timeBudget,
         const remainingGreyProgress = remainingProgress - redProgress;
         const whiteProgress = 100 - spentProgress - remainingProgress;
 
-        setGreenPercent(spentProgress);
+        setGreenPercent(Math.max(0, spentProgress));
         setGreyPercent(Math.max(0, remainingGreyProgress));
-        setRedPercent(redProgress);
+        setRedPercent(Math.max(0, redProgress));
         setWhitePercent(Math.max(0, whiteProgress));
         setBlankPercent(0);
 
         const budgetIndicator = total ? (timeBudget / total) * 100 : 0;
-        setBudgetPosition(`${Math.min(budgetIndicator, 100)}%`);
+        setBudgetPosition(Math.min(budgetIndicator, 100));
 
         const maxTime = Math.max(timeOriginalEstimate, timeSpent + timeRemaining);
         setHoursPassed(timeSpent);
@@ -62,12 +63,19 @@ function IssuePanel({timeSpent, timeRemaining, timeOriginalEstimate, timeBudget,
     );
 }
 
+IssuePanel.propTypes = {
+    timeSpent: PropTypes.number.isRequired,
+    timeRemaining: PropTypes.number.isRequired,
+    timeOriginalEstimate: PropTypes.number.isRequired,
+    timeBudget: PropTypes.number.isRequired,
+    title: PropTypes.string,
+};
+
 export default IssuePanel;
 
 const IssuePanelContainer = styled.div`
     box-shadow: 0 0 6px #A2A2A2;
     background-color: #EFEFEF;
-    padding: 20px;
-    padding-top: 25px;
+    padding: 25px 20px 20px;
     margin-bottom: 20px;
 `;

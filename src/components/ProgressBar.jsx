@@ -1,7 +1,8 @@
 import styled from 'styled-components';
+import PropTypes from 'prop-types';
 
 function ProgressBar({
-                         budgetPosition,
+                         budgetPosition = 0,
                          greenPercent = 0,
                          greyPercent = 0,
                          redPercent = 0,
@@ -20,13 +21,22 @@ function ProgressBar({
         <ProgressBarContainer>
             {sections
                 .filter(section => parseFloat(section.width) > 0)
-                .map((section, index) => (
-                    <ProgressSection key={index} width={section.width} color={section.color}/>
+                .map((section) => (
+                    <ProgressSection key={section.color} width={section.width} color={section.color}/>
                 ))}
             <BudgetIndicator position={budgetPosition}/>
         </ProgressBarContainer>
     );
 }
+
+ProgressBar.propTypes = {
+    budgetPosition: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    greenPercent: PropTypes.number,
+    greyPercent: PropTypes.number,
+    redPercent: PropTypes.number,
+    whitePercent: PropTypes.number,
+    blankPercent: PropTypes.number,
+};
 
 export default ProgressBar;
 
